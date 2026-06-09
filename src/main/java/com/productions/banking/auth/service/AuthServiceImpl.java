@@ -1,5 +1,6 @@
 package com.productions.banking.auth.service;
 
+import com.productions.banking.auth.dto.LoginRequest;
 import com.productions.banking.auth.dto.RegisterRequest;
 import com.productions.banking.common.exception.BadRequestException;
 import com.productions.banking.common.exception.ResourceNotFoundException;
@@ -46,5 +47,16 @@ public class AuthServiceImpl implements AuthService {
         user.getRoles().add(customerRole);
 
         userRepository.save(user);
+    }
+
+    @Override
+    public void login(LoginRequest request) {
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new BadRequestException("Invalid username or password"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new BadRequestException("Invalid username or password");
+        }
+
     }
 }

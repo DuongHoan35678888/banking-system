@@ -1,5 +1,6 @@
 package com.productions.banking.auth.controller;
 
+import com.productions.banking.auth.dto.LoginRequest;
 import com.productions.banking.auth.dto.RegisterRequest;
 import com.productions.banking.auth.service.AuthService;
 import com.productions.banking.common.response.MessageResponse;
@@ -27,5 +28,15 @@ public class AuthController {
         return ResponseEntity.ok(
                 new MessageResponse("User registered successfully")
         );
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<MessageResponse> login(
+            @Valid @RequestBody LoginRequest request) {
+
+        authService.login(request);
+
+        return ResponseEntity.ok(
+                new MessageResponse("User logged successfully"));
     }
 }
