@@ -4,13 +4,11 @@ import com.productions.banking.auth.dto.LoginRequest;
 import com.productions.banking.auth.dto.RegisterRequest;
 import com.productions.banking.auth.service.AuthService;
 import com.productions.banking.common.response.MessageResponse;
+import com.productions.banking.security.jwt.JwtService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -18,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<MessageResponse> register(
@@ -38,5 +37,10 @@ public class AuthController {
 
         return ResponseEntity.ok(
                 new MessageResponse("User logged successfully"));
+    }
+
+    @GetMapping("/token")
+    public String token() {
+        return jwtService.generateToken("hoan");
     }
 }
