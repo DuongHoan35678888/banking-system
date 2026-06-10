@@ -51,4 +51,13 @@ public class AuthController {
 
         return jwtService.extractUsername(token);
     }
+
+    @GetMapping("/validate")
+    public boolean validate() {
+
+        String token = jwtService.generateToken("hoan");
+
+        return jwtService.isTokenValid(token, "hoan");
+    }
+
 }
