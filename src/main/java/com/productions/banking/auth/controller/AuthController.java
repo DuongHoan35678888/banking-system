@@ -43,4 +43,12 @@ public class AuthController {
     public String token() {
         return jwtService.generateToken("hoan");
     }
+
+    @GetMapping("/username")
+    public String username() {
+
+        String token = jwtService.generateToken("hoan");
+
+        return jwtService.extractUsername(token);
+    }
 }
