@@ -30,6 +30,7 @@ public class JwtServiceImpl implements JwtService {
 
         Map<String, Object> claims = new HashMap<>();
 
+        claims.put("userId", user.getId());
         claims.put("roles", user.getRoles().stream()
                 .map(Role::getName)
                 .toList());

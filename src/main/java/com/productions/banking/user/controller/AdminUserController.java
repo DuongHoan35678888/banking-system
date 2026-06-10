@@ -1,4 +1,4 @@
-package com.productions.banking.auth.controller;
+package com.productions.banking.user.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;

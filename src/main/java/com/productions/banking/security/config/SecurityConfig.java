@@ -1,4 +1,4 @@
-package com.productions.banking.security;
+package com.productions.banking.security.config;
 
 import com.productions.banking.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;

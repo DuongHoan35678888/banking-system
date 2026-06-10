@@ -1,5 +1,6 @@
 package com.productions.banking.auth.service;
 
+import com.productions.banking.auth.dto.AuthResponse;
 import com.productions.banking.auth.dto.LoginRequest;
 import com.productions.banking.auth.dto.RegisterRequest;
 import com.productions.banking.common.exception.BadRequestException;
@@ -24,6 +25,7 @@ public class AuthServiceImpl implements AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     public void register(RegisterRequest request) {
@@ -52,7 +54,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String login(LoginRequest request) {
+    public AuthResponse login(LoginRequest request) {
+
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new BadRequestException("Invalid username or password"));
 
@@ -60,6 +63,9 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("Invalid username or password");
         }
 
-        return jwtService.generateToken(user);
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = refreshTokenService.createRefreshToken(user.getUsername()).getToken();
+
+        return new AuthResponse(accessToken, refreshToken);
     }
 }
