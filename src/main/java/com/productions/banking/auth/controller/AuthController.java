@@ -1,9 +1,6 @@
 package com.productions.banking.auth.controller;
 
-import com.productions.banking.auth.dto.AuthResponse;
-import com.productions.banking.auth.dto.LoginRequest;
-import com.productions.banking.auth.dto.RefreshTokenRequest;
-import com.productions.banking.auth.dto.RegisterRequest;
+import com.productions.banking.auth.dto.*;
 import com.productions.banking.auth.entity.RefreshToken;
 import com.productions.banking.auth.service.AuthService;
 import com.productions.banking.auth.service.RefreshTokenService;
@@ -14,6 +11,7 @@ import com.productions.banking.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -59,6 +57,15 @@ public class AuthController {
         return ResponseEntity.ok(
                 new AuthResponse(newAccessToken, request.getRefreshToken())
         );
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserInfoResponse> me(
+            Authentication authentication) {
+
+        UserInfoResponse response = authService.getCurrentUser(authentication.getName());
+
+        return ResponseEntity.ok(response);
     }
 
 }

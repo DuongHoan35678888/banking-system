@@ -3,6 +3,7 @@ package com.productions.banking.auth.service;
 import com.productions.banking.auth.dto.AuthResponse;
 import com.productions.banking.auth.dto.LoginRequest;
 import com.productions.banking.auth.dto.RegisterRequest;
+import com.productions.banking.auth.dto.UserInfoResponse;
 import com.productions.banking.common.exception.BadRequestException;
 import com.productions.banking.common.exception.ResourceNotFoundException;
 import com.productions.banking.role.entity.Role;
@@ -67,5 +68,22 @@ public class AuthServiceImpl implements AuthService {
         String refreshToken = refreshTokenService.createRefreshToken(user.getUsername()).getToken();
 
         return new AuthResponse(accessToken, refreshToken);
+    }
+
+    @Override
+    public UserInfoResponse getCurrentUser(String username) {
+
+        User user = userRepository.findByUsernameWithRoles(username)
+                .orElseThrow(() ->
+                        new BadRequestException("User not found"));
+
+        return new UserInfoResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getRoles()
+                        .stream()
+                        .map(role -> role.getName().name())
+                        .toList()
+        );
     }
 }
