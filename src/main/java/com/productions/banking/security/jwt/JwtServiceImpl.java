@@ -1,5 +1,7 @@
 package com.productions.banking.security.jwt;
 
+import com.productions.banking.role.entity.Role;
+import com.productions.banking.user.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -22,10 +26,17 @@ public class JwtServiceImpl implements JwtService {
     private long expiration;
 
     @Override
-    public String generateToken(String username) {
+    public String generateToken(User user) {
+
+        Map<String, Object> claims = new HashMap<>();
+
+        claims.put("roles", user.getRoles().stream()
+                .map(Role::getName)
+                .toList());
 
         return Jwts.builder()
-                .subject(username)
+                .subject(user.getUsername())
+                .claims(claims)
                 .issuedAt(new Date())
                 .expiration(
                         new Date(

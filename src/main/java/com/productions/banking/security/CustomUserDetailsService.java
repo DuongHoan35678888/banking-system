@@ -3,6 +3,7 @@ package com.productions.banking.security;
 import com.productions.banking.user.entity.User;
 import com.productions.banking.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,16 +25,12 @@ public class CustomUserDetailsService
                         new UsernameNotFoundException(
                                 "User not found"));
 
-        return org.springframework.security.core.userdetails.User
-                .builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .authorities(
-                        user.getRoles()
-                                .stream()
-                                .map(role -> role.getName().name())
-                                .toArray(String[]::new)
-                )
-                .build();
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                user.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                        .toList()
+        );
     }
 }

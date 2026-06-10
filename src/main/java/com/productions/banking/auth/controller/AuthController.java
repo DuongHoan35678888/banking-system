@@ -30,34 +30,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<MessageResponse> login(
+    public ResponseEntity<?> login(
             @Valid @RequestBody LoginRequest request) {
 
-        authService.login(request);
+        String token = authService.login(request);
 
-        return ResponseEntity.ok(
-                new MessageResponse("User logged successfully"));
-    }
-
-    @GetMapping("/token")
-    public String token() {
-        return jwtService.generateToken("hoan");
-    }
-
-    @GetMapping("/username")
-    public String username() {
-
-        String token = jwtService.generateToken("hoan");
-
-        return jwtService.extractUsername(token);
-    }
-
-    @GetMapping("/validate")
-    public boolean validate() {
-
-        String token = jwtService.generateToken("hoan");
-
-        return jwtService.isTokenValid(token, "hoan");
+        return ResponseEntity.ok(token);
     }
 
 }

@@ -1,8 +1,10 @@
 package com.productions.banking.security.jwt;
 
+import com.productions.banking.user.entity.User;
+
 public interface JwtService {
 
-    String generateToken(String username);
+    String generateToken(User user);
 
     String extractUsername(String token);
 
