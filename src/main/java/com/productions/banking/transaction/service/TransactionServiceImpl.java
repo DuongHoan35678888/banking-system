@@ -4,6 +4,7 @@ import com.productions.banking.account.entity.Account;
 import com.productions.banking.account.repository.AccountRepository;
 import com.productions.banking.common.exception.BadRequestException;
 import com.productions.banking.common.exception.ResourceNotFoundException;
+import com.productions.banking.transaction.dto.AdminTransactionResponse;
 import com.productions.banking.transaction.dto.TransactionResponse;
 import com.productions.banking.transaction.dto.TransferRequest;
 import com.productions.banking.transaction.dto.TransferResponse;
@@ -191,6 +192,26 @@ public class TransactionServiceImpl
                                 transaction.getSourceBalanceAfter(),
                                 transaction.getDestinationBalanceBefore(),
                                 transaction.getDestinationBalanceAfter(),
+                                transaction.getCreatedAt()
+                        )
+                )
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AdminTransactionResponse> getAllTransactions() {
+
+        return transactionRepository
+                .findAll()
+                .stream()
+                .map(transaction ->
+                        new AdminTransactionResponse(
+                                transaction.getId(),
+                                transaction.getFromAccountNumber(),
+                                transaction.getToAccountNumber(),
+                                transaction.getAmount(),
+                                transaction.getStatus(),
                                 transaction.getCreatedAt()
                         )
                 )

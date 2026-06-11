@@ -1,5 +1,6 @@
 package com.productions.banking.transaction.service;
 
+import com.productions.banking.transaction.dto.AdminTransactionResponse;
 import com.productions.banking.transaction.dto.TransactionResponse;
 import com.productions.banking.transaction.dto.TransferRequest;
 import com.productions.banking.transaction.dto.TransferResponse;
@@ -13,4 +14,5 @@ public interface TransactionService {
     List<TransactionResponse> getMyHistory(
             String username);
 
+    List<AdminTransactionResponse> getAllTransactions();
 }
