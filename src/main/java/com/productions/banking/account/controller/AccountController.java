@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
@@ -28,5 +30,16 @@ public class AccountController {
                 );
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/my-accounts")
+    public ResponseEntity<List<AccountResponse>> getMyAccounts(
+            Authentication authentication) {
+
+        return ResponseEntity.ok(
+                accountService.getMyAccounts(
+                        authentication.getName()
+                )
+        );
     }
 }

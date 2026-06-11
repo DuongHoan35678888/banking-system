@@ -8,11 +8,12 @@ import com.productions.banking.account.repository.AccountRepository;
 import com.productions.banking.common.exception.BadRequestException;
 import com.productions.banking.user.entity.User;
 import com.productions.banking.user.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -51,5 +52,25 @@ public class AccountServiceImpl implements AccountService {
                 savedAccount.getBalance(),
                 savedAccount.getStatus()
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AccountResponse> getMyAccounts(
+            String username) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new BadRequestException("User not found"));
+
+        return accountRepository.findByUserId(user.getId())
+                .stream()
+                .map(account -> new AccountResponse(
+                        account.getId(),
+                        account.getAccountNumber(),
+                        account.getBalance(),
+                        account.getStatus()
+                ))
+                .toList();
     }
 }
