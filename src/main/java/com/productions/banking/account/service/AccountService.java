@@ -13,4 +13,9 @@ public interface AccountService {
     );
 
     List<AccountResponse> getMyAccounts(String username);
+
+    AccountResponse getAccountById(
+            String username,
+            Long accountId
+    );
 }

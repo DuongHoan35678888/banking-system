@@ -42,4 +42,17 @@ public class AccountController {
                 )
         );
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AccountResponse> getAccount(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        return ResponseEntity.ok(
+                accountService.getAccountById(
+                        authentication.getName(),
+                        id
+                )
+        );
+    }
 }

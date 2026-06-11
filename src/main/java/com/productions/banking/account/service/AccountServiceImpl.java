@@ -6,6 +6,7 @@ import com.productions.banking.account.entity.Account;
 import com.productions.banking.account.entity.AccountStatus;
 import com.productions.banking.account.repository.AccountRepository;
 import com.productions.banking.common.exception.BadRequestException;
+import com.productions.banking.common.exception.ResourceNotFoundException;
 import com.productions.banking.user.entity.User;
 import com.productions.banking.user.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,5 +73,20 @@ public class AccountServiceImpl implements AccountService {
                         account.getStatus()
                 ))
                 .toList();
+    }
+
+    @Override
+    public AccountResponse getAccountById(String username, Long accountId) {
+
+        Account account = accountRepository
+                .findByIdAndUsername(accountId, username)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Account not found"));
+
+        return new AccountResponse(
+                account.getId(),
+                account.getAccountNumber(),
+                account.getBalance(),
+                account.getStatus());
     }
 }
