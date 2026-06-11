@@ -4,6 +4,7 @@ import com.productions.banking.account.entity.Account;
 import com.productions.banking.account.repository.AccountRepository;
 import com.productions.banking.common.exception.BadRequestException;
 import com.productions.banking.common.exception.ResourceNotFoundException;
+import com.productions.banking.transaction.dto.TransactionResponse;
 import com.productions.banking.transaction.dto.TransferRequest;
 import com.productions.banking.transaction.dto.TransferResponse;
 import com.productions.banking.transaction.entity.Transaction;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -150,5 +152,48 @@ public class TransactionServiceImpl
                 request.amount(),
                 sourceBalanceAfter
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TransactionResponse> getMyHistory(
+            String username) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new BadRequestException(
+                                "User not found"));
+
+        List<Account> accounts =
+                accountRepository.findByUserId(
+                        user.getId());
+
+        List<String> accountNumbers =
+                accounts.stream()
+                        .map(Account::getAccountNumber)
+                        .toList();
+
+        List<Transaction> transactions =
+                transactionRepository
+                        .findByFromAccountNumberInOrToAccountNumberInOrderByCreatedAtDesc(
+                                accountNumbers,
+                                accountNumbers);
+
+        return transactions.stream()
+                .map(transaction ->
+                        new TransactionResponse(
+                                transaction.getId(),
+                                transaction.getFromAccountNumber(),
+                                transaction.getToAccountNumber(),
+                                transaction.getAmount(),
+                                transaction.getStatus(),
+                                transaction.getSourceBalanceBefore(),
+                                transaction.getSourceBalanceAfter(),
+                                transaction.getDestinationBalanceBefore(),
+                                transaction.getDestinationBalanceAfter(),
+                                transaction.getCreatedAt()
+                        )
+                )
+                .toList();
     }
 }

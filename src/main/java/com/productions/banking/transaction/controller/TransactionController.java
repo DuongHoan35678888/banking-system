@@ -1,5 +1,6 @@
 package com.productions.banking.transaction.controller;
 
+import com.productions.banking.transaction.dto.TransactionResponse;
 import com.productions.banking.transaction.dto.TransferRequest;
 import com.productions.banking.transaction.dto.TransferResponse;
 import com.productions.banking.transaction.service.TransactionService;
@@ -7,10 +8,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/transfers")
@@ -28,6 +28,17 @@ public class TransactionController {
                 transactionService.transfer(
                         authentication.getName(),
                         request
+                )
+        );
+    }
+
+    @GetMapping("/my-history")
+    public ResponseEntity<List<TransactionResponse>>
+    getMyHistory(Authentication authentication) {
+
+        return ResponseEntity.ok(
+                transactionService.getMyHistory(
+                        authentication.getName()
                 )
         );
     }
