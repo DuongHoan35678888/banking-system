@@ -205,10 +205,24 @@ public class TransactionServiceImpl
     @Override
     @Transactional(readOnly = true)
     public Page<AdminTransactionResponse> getAllTransactions(
+            TransactionStatus status,
             Pageable pageable) {
 
-        Page<Transaction> transactions =
-                transactionRepository.findAll(pageable);
+        Page<Transaction> transactions;
+
+        if (status == null) {
+
+            transactions =
+                    transactionRepository.findAll(pageable);
+
+        } else {
+
+            transactions =
+                    transactionRepository.findByStatus(
+                            status,
+                            pageable
+                    );
+        }
 
         return transactions.map(transaction ->
                 new AdminTransactionResponse(
