@@ -5,6 +5,7 @@ import com.productions.banking.admin.dto.AdminUserResponse;
 import com.productions.banking.common.exception.ResourceNotFoundException;
 import com.productions.banking.role.entity.Role;
 import com.productions.banking.user.entity.User;
+import com.productions.banking.user.entity.UserStatus;
 import com.productions.banking.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -64,5 +65,31 @@ public class AdminServiceImpl
                 roles,
                 user.getCreatedAt()
         );
+    }
+
+    @Override
+    @Transactional
+    public void lockUser(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found"
+                        ));
+
+        user.setStatus(UserStatus.BLOCKED);
+    }
+
+    @Override
+    @Transactional
+    public void unlockUser(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found"
+                        ));
+
+        user.setStatus(UserStatus.ACTIVE);
     }
 }

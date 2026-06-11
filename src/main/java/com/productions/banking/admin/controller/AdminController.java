@@ -73,4 +73,24 @@ public class AdminController {
                 adminService.getUserById(id)
         );
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/users/{id}/lock")
+    public ResponseEntity<Void> lockUser(
+            @PathVariable Long id) {
+
+        adminService.lockUser(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/users/{id}/unlock")
+    public ResponseEntity<Void> unlockUser(
+            @PathVariable Long id) {
+
+        adminService.unlockUser(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

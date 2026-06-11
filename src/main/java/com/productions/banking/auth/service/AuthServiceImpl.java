@@ -11,9 +11,12 @@ import com.productions.banking.role.entity.RoleName;
 import com.productions.banking.role.repository.RoleRepository;
 import com.productions.banking.security.jwt.JwtService;
 import com.productions.banking.user.entity.User;
+import com.productions.banking.user.entity.UserStatus;
 import com.productions.banking.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +30,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     public void register(RegisterRequest request) {
@@ -47,6 +51,7 @@ public class AuthServiceImpl implements AuthService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .status(UserStatus.ACTIVE)
                 .build();
 
         user.getRoles().add(customerRole);
@@ -57,17 +62,32 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse login(LoginRequest request) {
 
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new BadRequestException("Invalid username or password"));
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                )
+        );
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BadRequestException("Invalid username or password");
-        }
+        User user = userRepository.findByUsername(
+                        request.getUsername())
+                .orElseThrow(() ->
+                        new BadRequestException(
+                                "User not found"));
 
-        String accessToken = jwtService.generateToken(user);
-        String refreshToken = refreshTokenService.createRefreshToken(user.getUsername()).getToken();
+        String accessToken =
+                jwtService.generateToken(user);
 
-        return new AuthResponse(accessToken, refreshToken);
+        String refreshToken =
+                refreshTokenService
+                        .createRefreshToken(
+                                user.getUsername())
+                        .getToken();
+
+        return new AuthResponse(
+                accessToken,
+                refreshToken
+        );
     }
 
     @Override

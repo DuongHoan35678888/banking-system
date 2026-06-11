@@ -11,4 +11,8 @@ public interface AdminService {
             Pageable pageable);
 
     AdminUserDetailResponse getUserById(Long userId);
+
+    void lockUser(Long userId);
+
+    void unlockUser(Long userId);
 }

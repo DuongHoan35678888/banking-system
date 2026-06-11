@@ -3,6 +3,8 @@ package com.productions.banking.common.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -112,6 +114,39 @@ public class GlobalExceptionHandler {
                                 LocalDateTime.now(),
                                 500,
                                 "INTERNAL_SERVER_ERROR",
+                                ex.getMessage(),
+                                request.getRequestURI()
+                        )
+                );
+    }
+
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<ErrorResponse> handleLocked(
+            LockedException ex,
+            HttpServletRequest request) {
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(
+                        LocalDateTime.now(),
+                        HttpStatus.FORBIDDEN.value(),
+                        "ACCOUNT_BLOCKED",
+                        ex.getMessage(),
+                        request.getRequestURI()
+                ));
+    }
+
+    @ExceptionHandler(
+            InternalAuthenticationServiceException.class)
+    public ResponseEntity<ErrorResponse> handleAuthentication(
+            InternalAuthenticationServiceException ex,
+            HttpServletRequest request) {
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(
+                        new ErrorResponse(
+                                LocalDateTime.now(),
+                                HttpStatus.FORBIDDEN.value(),
+                                "ACCOUNT_BLOCKED",
                                 ex.getMessage(),
                                 request.getRequestURI()
                         )

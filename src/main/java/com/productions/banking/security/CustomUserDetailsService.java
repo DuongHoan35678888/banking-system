@@ -1,8 +1,10 @@
 package com.productions.banking.security;
 
 import com.productions.banking.user.entity.User;
+import com.productions.banking.user.entity.UserStatus;
 import com.productions.banking.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,6 +26,11 @@ public class CustomUserDetailsService
                 .orElseThrow(() ->
                         new UsernameNotFoundException(
                                 "User not found"));
+
+        if (user.getStatus() == UserStatus.BLOCKED) {
+            throw new LockedException(
+                    "User account is blocked");
+        }
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
