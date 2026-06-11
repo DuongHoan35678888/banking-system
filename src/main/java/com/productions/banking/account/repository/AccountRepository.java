@@ -14,4 +14,9 @@ public interface AccountRepository
     List<Account> findByUserId(Long userId);
 
     Optional<Account> findByAccountNumber(String accountNumber);
+
+    Optional<Account> findByIdAndUserId(
+            Long accountId,
+            Long userId
+    );
 }
