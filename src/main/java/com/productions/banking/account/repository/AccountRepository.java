@@ -30,4 +30,9 @@ public interface AccountRepository
     Optional<Account> findByIdAndUsername(
             Long accountId,
             String username);
+
+    Optional<Account> findByAccountNumberAndUserId(
+            String accountNumber,
+            Long userId
+    );
 }

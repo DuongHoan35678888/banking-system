@@ -2,6 +2,8 @@ package com.productions.banking.account.service;
 
 import com.productions.banking.account.dto.AccountResponse;
 import com.productions.banking.account.dto.CreateAccountRequest;
+import com.productions.banking.account.dto.DepositRequest;
+import com.productions.banking.account.dto.DepositResponse;
 import com.productions.banking.account.entity.Account;
 import com.productions.banking.account.entity.AccountStatus;
 import com.productions.banking.account.repository.AccountRepository;
@@ -9,6 +11,7 @@ import com.productions.banking.common.exception.BadRequestException;
 import com.productions.banking.common.exception.ResourceNotFoundException;
 import com.productions.banking.user.entity.User;
 import com.productions.banking.user.repository.UserRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -88,5 +91,46 @@ public class AccountServiceImpl implements AccountService {
                 account.getAccountNumber(),
                 account.getBalance(),
                 account.getStatus());
+    }
+
+    @Transactional
+    public DepositResponse deposit(String username, DepositRequest request) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new BadRequestException("User not found"));
+
+        Account account = accountRepository
+                .findByAccountNumberAndUserId(
+                        request.accountNumber(),
+                        user.getId()
+                )
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Account not found"
+                        ));
+
+        if (!account.getUser().getId()
+                .equals(user.getId())) {
+
+            throw new AccessDeniedException(
+                    "You do not own this account");
+        }
+
+        BigDecimal oldBalance = account.getBalance();
+
+        account.setBalance(
+                oldBalance.add(
+                        request.amount()
+                )
+        );
+
+        BigDecimal newBalance = account.getBalance();
+
+        return new DepositResponse(
+                account.getAccountNumber(),
+                oldBalance,
+                newBalance
+        );
     }
 }
