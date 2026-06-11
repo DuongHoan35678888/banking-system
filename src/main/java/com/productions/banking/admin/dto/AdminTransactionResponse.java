@@ -1,4 +1,4 @@
-package com.productions.banking.transaction.dto;
+package com.productions.banking.admin.dto;
 
 import com.productions.banking.transaction.entity.TransactionStatus;
 

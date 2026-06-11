@@ -4,7 +4,7 @@ import com.productions.banking.account.entity.Account;
 import com.productions.banking.account.repository.AccountRepository;
 import com.productions.banking.common.exception.BadRequestException;
 import com.productions.banking.common.exception.ResourceNotFoundException;
-import com.productions.banking.transaction.dto.AdminTransactionResponse;
+import com.productions.banking.admin.dto.AdminTransactionResponse;
 import com.productions.banking.transaction.dto.TransactionResponse;
 import com.productions.banking.transaction.dto.TransferRequest;
 import com.productions.banking.transaction.dto.TransferResponse;
@@ -15,9 +15,7 @@ import com.productions.banking.user.entity.User;
 import com.productions.banking.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -206,21 +204,21 @@ public class TransactionServiceImpl
 
     @Override
     @Transactional(readOnly = true)
-    public List<AdminTransactionResponse> getAllTransactions() {
+    public Page<AdminTransactionResponse> getAllTransactions(
+            Pageable pageable) {
 
-        return transactionRepository
-                .findAll()
-                .stream()
-                .map(transaction ->
-                        new AdminTransactionResponse(
-                                transaction.getId(),
-                                transaction.getFromAccountNumber(),
-                                transaction.getToAccountNumber(),
-                                transaction.getAmount(),
-                                transaction.getStatus(),
-                                transaction.getCreatedAt()
-                        )
+        Page<Transaction> transactions =
+                transactionRepository.findAll(pageable);
+
+        return transactions.map(transaction ->
+                new AdminTransactionResponse(
+                        transaction.getId(),
+                        transaction.getFromAccountNumber(),
+                        transaction.getToAccountNumber(),
+                        transaction.getAmount(),
+                        transaction.getStatus(),
+                        transaction.getCreatedAt()
                 )
-                .toList();
+        );
     }
 }
