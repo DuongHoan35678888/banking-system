@@ -14,6 +14,10 @@ import com.productions.banking.transaction.repository.TransactionRepository;
 import com.productions.banking.user.entity.User;
 import com.productions.banking.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -157,45 +161,47 @@ public class TransactionServiceImpl
 
     @Override
     @Transactional(readOnly = true)
-    public List<TransactionResponse> getMyHistory(
-            String username) {
+    public Page<TransactionResponse> getMyHistory(
+            String username,
+            Pageable pageable) {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() ->
-                        new BadRequestException(
-                                "User not found"));
+                        new BadRequestException("User not found"));
 
         List<Account> accounts =
-                accountRepository.findByUserId(
-                        user.getId());
+                accountRepository.findByUserId(user.getId());
 
-        List<String> accountNumbers =
-                accounts.stream()
-                        .map(Account::getAccountNumber)
-                        .toList();
-
-        List<Transaction> transactions =
-                transactionRepository
-                        .findByFromAccountNumberInOrToAccountNumberInOrderByCreatedAtDesc(
-                                accountNumbers,
-                                accountNumbers);
-
-        return transactions.stream()
-                .map(transaction ->
-                        new TransactionResponse(
-                                transaction.getId(),
-                                transaction.getFromAccountNumber(),
-                                transaction.getToAccountNumber(),
-                                transaction.getAmount(),
-                                transaction.getStatus(),
-                                transaction.getSourceBalanceBefore(),
-                                transaction.getSourceBalanceAfter(),
-                                transaction.getDestinationBalanceBefore(),
-                                transaction.getDestinationBalanceAfter(),
-                                transaction.getCreatedAt()
-                        )
-                )
+        List<String> accountNumbers = accounts.stream()
+                .map(Account::getAccountNumber)
                 .toList();
+
+        if (accountNumbers.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        Page<Transaction> transactions =
+                transactionRepository
+                        .findByFromAccountNumberInOrToAccountNumberIn(
+                                accountNumbers,
+                                accountNumbers,
+                                pageable
+                        );
+
+        return transactions.map(transaction ->
+                new TransactionResponse(
+                        transaction.getId(),
+                        transaction.getFromAccountNumber(),
+                        transaction.getToAccountNumber(),
+                        transaction.getAmount(),
+                        transaction.getStatus(),
+                        transaction.getSourceBalanceBefore(),
+                        transaction.getSourceBalanceAfter(),
+                        transaction.getDestinationBalanceBefore(),
+                        transaction.getDestinationBalanceAfter(),
+                        transaction.getCreatedAt()
+                )
+        );
     }
 
     @Override
