@@ -38,4 +38,7 @@ public class User extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
+
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
 }

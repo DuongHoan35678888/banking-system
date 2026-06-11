@@ -1,6 +1,7 @@
 package com.productions.banking.user.repository;
 
 import com.productions.banking.user.entity.User;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -24,4 +25,7 @@ public interface UserRepository
         WHERE u.username = :username
     """)
     Optional<User> findByUsernameWithRoles(String username);
+
+    @EntityGraph(attributePaths = "roles")
+    Optional<User> findWithRolesById(Long id);
 }

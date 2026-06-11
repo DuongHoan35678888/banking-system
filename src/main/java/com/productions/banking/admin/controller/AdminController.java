@@ -1,6 +1,7 @@
 package com.productions.banking.admin.controller;
 
 import com.productions.banking.admin.dto.AdminTransactionResponse;
+import com.productions.banking.admin.dto.AdminUserDetailResponse;
 import com.productions.banking.admin.dto.AdminUserResponse;
 import com.productions.banking.admin.service.AdminService;
 import com.productions.banking.transaction.entity.TransactionStatus;
@@ -12,10 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -62,6 +60,17 @@ public class AdminController {
                 adminService.getAllUsers(
                         pageable
                 )
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/users/{id}")
+    public ResponseEntity<AdminUserDetailResponse>
+    getUserById(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                adminService.getUserById(id)
         );
     }
 }
