@@ -1,9 +1,6 @@
 package com.productions.banking.account.service;
 
-import com.productions.banking.account.dto.AccountResponse;
-import com.productions.banking.account.dto.CreateAccountRequest;
-import com.productions.banking.account.dto.DepositRequest;
-import com.productions.banking.account.dto.DepositResponse;
+import com.productions.banking.account.dto.*;
 import com.productions.banking.account.entity.Account;
 import com.productions.banking.account.entity.AccountStatus;
 import com.productions.banking.account.repository.AccountRepository;
@@ -131,6 +128,58 @@ public class AccountServiceImpl implements AccountService {
                 account.getAccountNumber(),
                 oldBalance,
                 newBalance
+        );
+    }
+
+    @Override
+    @Transactional
+    public AccountResponse withdraw(
+            String username,
+            WithdrawRequest request) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new BadRequestException(
+                                "User not found"));
+
+        Account account =
+                accountRepository
+                        .findByAccountNumberForUpdate(
+                                request.accountNumber())
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Account not found"));
+
+        if (!account.getUser().getId()
+                .equals(user.getId())) {
+
+            throw new BadRequestException(
+                    "You do not own this account");
+        }
+
+        if (account.getStatus()
+                != AccountStatus.ACTIVE) {
+
+            throw new BadRequestException(
+                    "Account is not active");
+        }
+
+        if (account.getBalance()
+                .compareTo(request.amount()) < 0) {
+
+            throw new BadRequestException(
+                    "Insufficient balance");
+        }
+
+        account.setBalance(
+                account.getBalance()
+                        .subtract(request.amount()));
+
+        return new AccountResponse(
+                account.getId(),
+                account.getAccountNumber(),
+                account.getBalance(),
+                account.getStatus()
         );
     }
 }

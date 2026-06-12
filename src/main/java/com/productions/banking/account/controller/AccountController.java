@@ -1,9 +1,6 @@
 package com.productions.banking.account.controller;
 
-import com.productions.banking.account.dto.AccountResponse;
-import com.productions.banking.account.dto.CreateAccountRequest;
-import com.productions.banking.account.dto.DepositRequest;
-import com.productions.banking.account.dto.DepositResponse;
+import com.productions.banking.account.dto.*;
 import com.productions.banking.account.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -65,6 +62,23 @@ public class AccountController {
 
         return ResponseEntity.ok(
                 accountService.deposit(
+                        authentication.getName(),
+                        request
+                )
+        );
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<AccountResponse> withdraw(
+
+            Authentication authentication,
+
+            @Valid
+            @RequestBody
+            WithdrawRequest request) {
+
+        return ResponseEntity.ok(
+                accountService.withdraw(
                         authentication.getName(),
                         request
                 )

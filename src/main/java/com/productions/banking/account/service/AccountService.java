@@ -1,9 +1,6 @@
 package com.productions.banking.account.service;
 
-import com.productions.banking.account.dto.AccountResponse;
-import com.productions.banking.account.dto.CreateAccountRequest;
-import com.productions.banking.account.dto.DepositRequest;
-import com.productions.banking.account.dto.DepositResponse;
+import com.productions.banking.account.dto.*;
 
 import java.util.List;
 
@@ -26,4 +23,7 @@ public interface AccountService {
             DepositRequest request
     );
 
+    AccountResponse withdraw(
+            String username,
+            WithdrawRequest request);
 }
