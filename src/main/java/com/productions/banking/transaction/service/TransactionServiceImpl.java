@@ -9,6 +9,7 @@ import com.productions.banking.transaction.dto.TransactionResponse;
 import com.productions.banking.transaction.dto.TransferRequest;
 import com.productions.banking.transaction.dto.TransferResponse;
 import com.productions.banking.transaction.entity.Transaction;
+import com.productions.banking.transaction.entity.TransactionDirection;
 import com.productions.banking.transaction.entity.TransactionStatus;
 import com.productions.banking.transaction.entity.TransactionType;
 import com.productions.banking.transaction.repository.TransactionRepository;
@@ -130,6 +131,7 @@ public class TransactionServiceImpl
                 Transaction.builder()
                         .type(TransactionType.TRANSFER)
                         .status(TransactionStatus.SUCCESS)
+                        .direction(TransactionDirection.OUT)
                         .accountNumber(
                                 lockedSource.getAccountNumber())
                         .relatedAccountNumber(
@@ -145,6 +147,7 @@ public class TransactionServiceImpl
                 Transaction.builder()
                         .type(TransactionType.TRANSFER)
                         .status(TransactionStatus.SUCCESS)
+                        .direction(TransactionDirection.IN)
                         .accountNumber(
                                 lockedDestination.getAccountNumber())
                         .relatedAccountNumber(
@@ -205,6 +208,7 @@ public class TransactionServiceImpl
                                 transaction.getAccountNumber(),
                                 transaction.getRelatedAccountNumber(),
                                 transaction.getAmount(),
+                                transaction.getDirection(),
                                 transaction.getBalanceBefore(),
                                 transaction.getBalanceAfter(),
                                 transaction.getCreatedAt()

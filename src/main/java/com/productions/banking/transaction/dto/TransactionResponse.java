@@ -1,5 +1,6 @@
 package com.productions.banking.transaction.dto;
 
+import com.productions.banking.transaction.entity.TransactionDirection;
 import com.productions.banking.transaction.entity.TransactionStatus;
 import com.productions.banking.transaction.entity.TransactionType;
 
@@ -19,6 +20,8 @@ public record TransactionResponse(
         String relatedAccountNumber,
 
         BigDecimal amount,
+
+        TransactionDirection direction,
 
         BigDecimal balanceBefore,
 

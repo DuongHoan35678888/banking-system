@@ -32,6 +32,8 @@ public class Transaction extends BaseEntity {
 
     private String relatedAccountNumber;
 
+    private TransactionDirection direction;
+
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
