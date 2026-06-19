@@ -10,6 +10,7 @@ import com.productions.banking.transaction.dto.TransferRequest;
 import com.productions.banking.transaction.dto.TransferResponse;
 import com.productions.banking.transaction.entity.Transaction;
 import com.productions.banking.transaction.entity.TransactionStatus;
+import com.productions.banking.transaction.entity.TransactionType;
 import com.productions.banking.transaction.repository.TransactionRepository;
 import com.productions.banking.user.entity.User;
 import com.productions.banking.user.repository.UserRepository;
@@ -109,11 +110,9 @@ public class TransactionServiceImpl
                     "Insufficient balance");
         }
 
-        BigDecimal sourceBalanceBefore =
-                lockedSource.getBalance();
+        BigDecimal sourceBalanceBefore = lockedSource.getBalance();
 
-        BigDecimal destinationBalanceBefore =
-                lockedDestination.getBalance();
+        BigDecimal destinationBalanceBefore = lockedDestination.getBalance();
 
         lockedSource.setBalance(
                 sourceBalanceBefore.subtract(
@@ -123,31 +122,43 @@ public class TransactionServiceImpl
                 destinationBalanceBefore.add(
                         request.amount()));
 
-        BigDecimal sourceBalanceAfter =
-                lockedSource.getBalance();
+        BigDecimal sourceBalanceAfter = lockedSource.getBalance();
 
-        BigDecimal destinationBalanceAfter =
-                lockedDestination.getBalance();
+        BigDecimal destinationBalanceAfter = lockedDestination.getBalance();
 
-        Transaction transaction =
+        Transaction debitTransaction =
                 Transaction.builder()
-                        .fromAccountNumber(
+                        .type(TransactionType.TRANSFER)
+                        .status(TransactionStatus.SUCCESS)
+                        .accountNumber(
                                 lockedSource.getAccountNumber())
-                        .toAccountNumber(
+                        .relatedAccountNumber(
                                 lockedDestination.getAccountNumber())
                         .amount(request.amount())
-                        .status(TransactionStatus.SUCCESS)
-                        .sourceBalanceBefore(
+                        .balanceBefore(
                                 sourceBalanceBefore)
-                        .sourceBalanceAfter(
+                        .balanceAfter(
                                 sourceBalanceAfter)
-                        .destinationBalanceBefore(
+                        .build();
+
+        Transaction creditTransaction =
+                Transaction.builder()
+                        .type(TransactionType.TRANSFER)
+                        .status(TransactionStatus.SUCCESS)
+                        .accountNumber(
+                                lockedDestination.getAccountNumber())
+                        .relatedAccountNumber(
+                                lockedSource.getAccountNumber())
+                        .amount(request.amount())
+                        .balanceBefore(
                                 destinationBalanceBefore)
-                        .destinationBalanceAfter(
+                        .balanceAfter(
                                 destinationBalanceAfter)
                         .build();
 
-        transactionRepository.save(transaction);
+        transactionRepository.save(debitTransaction);
+
+        transactionRepository.save(creditTransaction);
 
         return new TransferResponse(
                 lockedSource.getAccountNumber(),
@@ -180,25 +191,24 @@ public class TransactionServiceImpl
 
         Page<Transaction> transactions =
                 transactionRepository
-                        .findByFromAccountNumberInOrToAccountNumberIn(
-                                accountNumbers,
+                        .findByAccountNumberIn(
                                 accountNumbers,
                                 pageable
                         );
 
-        return transactions.map(transaction ->
-                new TransactionResponse(
-                        transaction.getId(),
-                        transaction.getFromAccountNumber(),
-                        transaction.getToAccountNumber(),
-                        transaction.getAmount(),
-                        transaction.getStatus(),
-                        transaction.getSourceBalanceBefore(),
-                        transaction.getSourceBalanceAfter(),
-                        transaction.getDestinationBalanceBefore(),
-                        transaction.getDestinationBalanceAfter(),
-                        transaction.getCreatedAt()
-                )
+        return transactions.map(
+                transaction ->
+                        new TransactionResponse(
+                                transaction.getId(),
+                                transaction.getType(),
+                                transaction.getStatus(),
+                                transaction.getAccountNumber(),
+                                transaction.getRelatedAccountNumber(),
+                                transaction.getAmount(),
+                                transaction.getBalanceBefore(),
+                                transaction.getBalanceAfter(),
+                                transaction.getCreatedAt()
+                        )
         );
     }
 
@@ -227,10 +237,13 @@ public class TransactionServiceImpl
         return transactions.map(transaction ->
                 new AdminTransactionResponse(
                         transaction.getId(),
-                        transaction.getFromAccountNumber(),
-                        transaction.getToAccountNumber(),
-                        transaction.getAmount(),
+                        transaction.getType(),
                         transaction.getStatus(),
+                        transaction.getAccountNumber(),
+                        transaction.getRelatedAccountNumber(),
+                        transaction.getAmount(),
+                        transaction.getBalanceBefore(),
+                        transaction.getBalanceAfter(),
                         transaction.getCreatedAt()
                 )
         );

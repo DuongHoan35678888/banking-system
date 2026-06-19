@@ -19,28 +19,25 @@ public class Transaction extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String fromAccountNumber;
-
-    @Column(nullable = false)
-    private String toAccountNumber;
-
-    @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal amount;
+    private TransactionType type;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TransactionStatus status;
 
-    @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal sourceBalanceBefore;
+    @Column(nullable = false)
+    private String accountNumber;
+
+    private String relatedAccountNumber;
 
     @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal sourceBalanceAfter;
+    private BigDecimal amount;
 
     @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal destinationBalanceBefore;
+    private BigDecimal balanceBefore;
 
     @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal destinationBalanceAfter;
+    private BigDecimal balanceAfter;
 }

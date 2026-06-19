@@ -1,6 +1,7 @@
 package com.productions.banking.transaction.dto;
 
 import com.productions.banking.transaction.entity.TransactionStatus;
+import com.productions.banking.transaction.entity.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -9,21 +10,19 @@ public record TransactionResponse(
 
         Long id,
 
-        String fromAccountNumber,
-
-        String toAccountNumber,
-
-        BigDecimal amount,
+        TransactionType type,
 
         TransactionStatus status,
 
-        BigDecimal sourceBalanceBefore,
+        String accountNumber,
 
-        BigDecimal sourceBalanceAfter,
+        String relatedAccountNumber,
 
-        BigDecimal destinationBalanceBefore,
+        BigDecimal amount,
 
-        BigDecimal destinationBalanceAfter,
+        BigDecimal balanceBefore,
+
+        BigDecimal balanceAfter,
 
         LocalDateTime createdAt
 ) {

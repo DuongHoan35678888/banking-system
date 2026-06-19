@@ -11,11 +11,9 @@ import java.util.List;
 public interface TransactionRepository
         extends JpaRepository<Transaction, Long> {
 
-    Page<Transaction> findByFromAccountNumberInOrToAccountNumberIn(
-            List<String> fromAccounts,
-            List<String> toAccounts,
-            Pageable pageable
-    );
+    Page<Transaction> findByAccountNumberIn(
+            List<String> accountNumbers,
+            Pageable pageable);
 
     Page<Transaction> findByStatus(
             TransactionStatus status,
