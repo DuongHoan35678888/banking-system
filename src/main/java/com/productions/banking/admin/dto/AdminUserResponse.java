@@ -1,5 +1,7 @@
 package com.productions.banking.admin.dto;
 
+import com.productions.banking.user.entity.UserStatus;
+
 import java.time.LocalDateTime;
 
 public record AdminUserResponse(
@@ -9,6 +11,8 @@ public record AdminUserResponse(
         String username,
 
         String email,
+
+        UserStatus status,
 
         LocalDateTime createdAt
 ) {

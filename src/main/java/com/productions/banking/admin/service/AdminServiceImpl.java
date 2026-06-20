@@ -35,6 +35,7 @@ public class AdminServiceImpl
                         user.getId(),
                         user.getUsername(),
                         user.getEmail(),
+                        user.getStatus(),
                         user.getCreatedAt()
                 )
         );
