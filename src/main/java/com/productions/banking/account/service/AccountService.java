@@ -23,7 +23,7 @@ public interface AccountService {
             DepositRequest request
     );
 
-    AccountResponse withdraw(
+    WithdrawResponse withdraw(
             String username,
             WithdrawRequest request);
 }

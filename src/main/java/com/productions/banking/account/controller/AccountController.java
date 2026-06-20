@@ -69,7 +69,7 @@ public class AccountController {
     }
 
     @PostMapping("/withdraw")
-    public ResponseEntity<AccountResponse> withdraw(
+    public ResponseEntity<WithdrawResponse> withdraw(
 
             Authentication authentication,
 

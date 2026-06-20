@@ -133,7 +133,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountResponse withdraw(
+    public WithdrawResponse withdraw(
             String username,
             WithdrawRequest request) {
 
@@ -171,15 +171,17 @@ public class AccountServiceImpl implements AccountService {
                     "Insufficient balance");
         }
 
-        account.setBalance(
-                account.getBalance()
-                        .subtract(request.amount()));
+        BigDecimal oldBalance = account.getBalance();
 
-        return new AccountResponse(
-                account.getId(),
+        account.setBalance(
+                oldBalance.subtract(request.amount()));
+
+        BigDecimal newBalance = account.getBalance();
+
+        return new WithdrawResponse(
                 account.getAccountNumber(),
-                account.getBalance(),
-                account.getStatus()
+                oldBalance,
+                newBalance
         );
     }
 }
