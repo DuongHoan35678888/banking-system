@@ -15,4 +15,8 @@ public interface AdminService {
     void lockUser(Long userId);
 
     void unlockUser(Long userId);
+
+    void grantAdmin(Long userId);
+
+    void revokeAdmin(Long userId);
 }

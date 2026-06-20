@@ -93,4 +93,24 @@ public class AdminController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/users/{id}/grant-admin")
+    public ResponseEntity<Void> grantAdmin(
+            @PathVariable Long id) {
+
+        adminService.grantAdmin(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/users/{id}/revoke-admin")
+    public ResponseEntity<Void> revokeAdmin(
+            @PathVariable Long id) {
+
+        adminService.revokeAdmin(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -1,9 +1,11 @@
 package com.productions.banking.user.repository;
 
+import com.productions.banking.role.entity.RoleName;
 import com.productions.banking.user.entity.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -28,4 +30,15 @@ public interface UserRepository
 
     @EntityGraph(attributePaths = "roles")
     Optional<User> findWithRolesById(Long id);
+
+    @Query("""
+       SELECT COUNT(DISTINCT u)
+       FROM User u
+       JOIN u.roles r
+       WHERE r.name = :roleName
+       """)
+    long countByRole(
+            @Param("roleName")
+            RoleName roleName
+    );
 }
